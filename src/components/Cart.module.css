@@ -1,0 +1,32 @@
+.cart {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.item {
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+}
+
+.image {
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.button {
+  margin-right: 8px;
+  padding: 8px;
+  border: none;
+  background: black;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.button:hover {
+  background: #333;
+}

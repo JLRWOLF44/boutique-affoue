@@ -1,0 +1,38 @@
+export const products = [
+  {
+    id: 1,
+    name: "Robe fleurie",
+    price: 20,
+    image: "https://via.placeholder.com/150",
+    size: "M",
+    category: "Robe",
+    condition: "Très bon état",
+  },
+  {
+    id: 2,
+    name: "Veste en jean",
+    price: 25,
+    image: "https://via.placeholder.com/150",
+    size: "L",
+    category: "Veste",
+    condition: "Bon état",
+  },
+  {
+    id: 3,
+    name: "Pull chaud",
+    price: 15,
+    image: "https://via.placeholder.com/150",
+    size: "S",
+    category: "Pull",
+    condition: "Comme neuf",
+  },
+  {
+    id: 4,
+    name: "Sac à main",
+    price: 18,
+    image: "https://via.placeholder.com/150",
+    size: "Unique",
+    category: "Accessoire",
+    condition: "Très bon état",
+  },
+];
