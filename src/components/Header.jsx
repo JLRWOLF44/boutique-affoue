@@ -14,7 +14,7 @@ export default function Header({ page, setPage, totalItems }) {
         </button>
 
         <button
-          className={styles.button}
+          className={page === "cart" ? styles.active : styles.button}
           onClick={() => setPage("cart")}
         >
           Panier ({totalItems})

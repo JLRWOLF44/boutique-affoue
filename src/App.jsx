@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ProductCard from "./components/ProductCard";
+import ProductDetail from "./components/ProductDetail";
 import Cart from "./components/cart";
+import SearchBar from "./components/SearchBar";
+import CategoryButtons from "./components/CategoryButtons";
 import { products } from "./data/products";
 
 export default function App() {
-  const [cart, setCart] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("Toutes");
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
   const [page, setPage] = useState("shop");
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [search, setSearch] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   function addToCart(product) {
     setCart((prevCart) => {
@@ -51,18 +64,58 @@ export default function App() {
     );
   }
 
-  const filteredProducts =
-    selectedCategory === "Toutes"
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  function openCategory(category) {
+    setCurrentCategory(category);
+    setPage("category");
+  }
 
-  const totalPrice = cart.reduce((total, item) => {
-    return total + item.price * item.quantity;
-  }, 0);
+  function goBackToShop() {
+    setCurrentCategory("");
+    setSearch("");
+    setPage("shop");
+  }
 
-  const totalItems = cart.reduce((total, item) => {
-    return total + item.quantity;
-  }, 0);
+  function openProduct(product) {
+    setSelectedProduct(product);
+    setPage("product");
+  }
+
+  function goBackFromProduct() {
+    if (currentCategory) {
+      setPage("category");
+    } else {
+      setPage("shop");
+    }
+  }
+
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+
+    const value = search.trim().toLowerCase();
+
+    if (value === "robe" || value === "robes") {
+      openCategory("Robe");
+    } else if (value === "veste" || value === "vestes") {
+      openCategory("Veste");
+    } else if (value === "pull" || value === "pulls") {
+      openCategory("Pull");
+    } else if (value === "accessoire" || value === "accessoires") {
+      openCategory("Accessoire");
+    } else {
+      alert("Catégorie non trouvée. Essaie : robe, veste, pull ou accessoire.");
+    }
+  }
+
+  const categoryProducts = products.filter(
+    (product) => product.category === currentCategory
+  );
+
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+
+  const totalPrice = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="container">
@@ -72,26 +125,51 @@ export default function App() {
         <>
           <h2>Ma boutique</h2>
 
-          <div>
-            <button onClick={() => setSelectedCategory("Toutes")}>Toutes</button>
-            <button onClick={() => setSelectedCategory("Robe")}>Robe</button>
-            <button onClick={() => setSelectedCategory("Veste")}>Veste</button>
-            <button onClick={() => setSelectedCategory("Pull")}>Pull</button>
-            <button onClick={() => setSelectedCategory("Accessoire")}>
-              Accessoire
-            </button>
-          </div>
+          <SearchBar
+            search={search}
+            setSearch={setSearch}
+            handleSearchSubmit={handleSearchSubmit}
+          />
+
+          <CategoryButtons openCategory={openCategory} />
 
           <div className="products">
-            {filteredProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
                 addToCart={addToCart}
+                openProduct={openProduct}
               />
             ))}
           </div>
         </>
+      )}
+
+      {page === "category" && (
+        <>
+          <button onClick={goBackToShop}>Retour</button>
+          <h2>{currentCategory}</h2>
+
+          <div className="products">
+            {categoryProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                addToCart={addToCart}
+                openProduct={openProduct}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {page === "product" && selectedProduct && (
+        <ProductDetail
+          product={selectedProduct}
+          addToCart={addToCart}
+          goBack={goBackFromProduct}
+        />
       )}
 
       {page === "cart" && (

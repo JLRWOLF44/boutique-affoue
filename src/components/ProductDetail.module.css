@@ -1,0 +1,115 @@
+.wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.backButton {
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  border: none;
+  background: black;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background: #333;
+}
+
+.content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.left {
+  flex: 1;
+  min-width: 280px;
+}
+
+.mainImage {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  border: 2px solid black;
+}
+
+.right {
+  flex: 1;
+  min-width: 280px;
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.info {
+  margin-bottom: 10px;
+}
+
+.description {
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+.cartButton {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border: none;
+  background: black;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cartButton:hover {
+  background: #333;
+}
+.imageContainer {
+  overflow: hidden;
+  border-radius: 10px;
+  width: fit-content;
+}
+.mainImage:hover {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 10px;
+  display: block ;
+  transition: transform 0.2s ease;
+  
+}
+.mainImage {
+  cursor: zoom-in;
+}
