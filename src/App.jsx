@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ProductCard from "./components/ProductCard";
 import ProductDetail from "./components/ProductDetail";
-import Cart from "./components/cart";
+import Cart from "./components/Cart";
 import SearchBar from "./components/SearchBar";
 import CategoryButtons from "./components/CategoryButtons";
 import { products } from "./data/products";
@@ -17,6 +17,7 @@ export default function App() {
   const [currentCategory, setCurrentCategory] = useState("");
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -36,6 +37,22 @@ export default function App() {
 
       return [...prevCart, { ...product, quantity: 1 }];
     });
+  }
+
+  function toggleFavorite(product) {
+    setFavorites((prev) => {
+      const exists = prev.find((item) => item.id === product.id);
+
+      if (exists) {
+        return prev.filter((item) => item.id !== product.id);
+      }
+
+      return [...prev, product];
+    });
+  }
+
+  function clearCart() {
+    setCart([]);
   }
 
   function removeFromCart(productId) {
@@ -140,6 +157,8 @@ export default function App() {
                 product={product}
                 addToCart={addToCart}
                 openProduct={openProduct}
+                toggleFavorite={toggleFavorite}
+                favorites={favorites}
               />
             ))}
           </div>
@@ -158,6 +177,8 @@ export default function App() {
                 product={product}
                 addToCart={addToCart}
                 openProduct={openProduct}
+                toggleFavorite={toggleFavorite}
+                favorites={favorites}
               />
             ))}
           </div>
@@ -179,6 +200,7 @@ export default function App() {
           increaseQuantity={increaseQuantity}
           decreaseQuantity={decreaseQuantity}
           totalPrice={totalPrice}
+          clearCart={clearCart}
         />
       )}
     </div>

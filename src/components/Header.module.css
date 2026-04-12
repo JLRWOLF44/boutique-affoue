@@ -1,22 +1,25 @@
 .header {
   background: white;
-  padding: 16px 20px;
+  padding: 16px;
   margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  margin: 0 0 10px 0;
+  margin: 0 0 12px 0;
+  font-size: 22px;
 }
 
 .nav {
   display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
 .button {
-  padding: 8px 12px;
+  width: 100%;
+  padding: 10px 12px;
   border: none;
   background: black;
   color: white;
@@ -27,6 +30,24 @@
 .button:hover {
   background: #333;
 }
+
 .active {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
   background: #555;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    flex-direction: row;
+  }
+
+  .button,
+  .active {
+    width: auto;
+  }
 }

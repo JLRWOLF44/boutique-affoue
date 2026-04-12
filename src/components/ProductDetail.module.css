@@ -1,13 +1,13 @@
 .wrapper {
   background: white;
-  padding: 20px;
+  padding: 16px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .backButton {
   margin-bottom: 20px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: none;
   background: black;
   color: white;
@@ -21,33 +21,39 @@
 
 .content {
   display: flex;
-  gap: 30px;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.left {
-  flex: 1;
-  min-width: 280px;
+.left,
+.right {
+  width: 100%;
+}
+
+.imageContainer {
+  overflow: hidden;
+  border-radius: 10px;
+  width: 100%;
 }
 
 .mainImage {
   width: 100%;
-  max-width: 400px;
   border-radius: 10px;
   display: block;
-  margin-bottom: 15px;
+  transition: transform 0.2s ease;
+  cursor: zoom-in;
 }
 
 .thumbnails {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: 12px;
 }
 
 .thumbnail {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
@@ -58,14 +64,14 @@
   border: 2px solid black;
 }
 
-.right {
-  flex: 1;
-  min-width: 280px;
+.active {
+  border: 2px solid black;
 }
 
 .title {
   margin-top: 0;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+  font-size: 24px;
 }
 
 .price {
@@ -84,6 +90,7 @@
 }
 
 .cartButton {
+  width: 100%;
   margin-top: 20px;
   padding: 12px 16px;
   border: none;
@@ -97,19 +104,33 @@
 .cartButton:hover {
   background: #333;
 }
-.imageContainer {
-  overflow: hidden;
-  border-radius: 10px;
-  width: fit-content;
-}
-.mainImage:hover {
-  width: 100%;
-  max-width: 600px;
-  border-radius: 10px;
-  display: block ;
-  transition: transform 0.2s ease;
-  
-}
-.mainImage {
-  cursor: zoom-in;
+
+@media (min-width: 768px) {
+  .wrapper {
+    padding: 20px;
+  }
+
+  .content {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 30px;
+  }
+
+  .left,
+  .right {
+    flex: 1;
+  }
+
+  .mainImage {
+    max-width: 500px;
+  }
+
+  .thumbnail {
+    width: 80px;
+    height: 80px;
+  }
+
+  .cartButton {
+    width: auto;
+  }
 }

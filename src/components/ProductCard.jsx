@@ -1,27 +1,42 @@
 import styles from "./ProductCard.module.css";
 
-export default function ProductCard({ product, addToCart, openProduct }) {
-  const { name, price, image, size, category, condition } = product;
+export default function ProductCard({
+  product,
+  addToCart,
+  openProduct,
+  toggleFavorite,
+  favorites,
+}) {
+  const isFavorite = favorites.some((item) => item.id === product.id);
 
   return (
     <div className={styles.card}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h3 className={styles.title} onClick={() => openProduct(product)}>
+          {product.name}
+        </h3>
+
+        <span
+          onClick={() => toggleFavorite(product)}
+          style={{ cursor: "pointer", fontSize: "20px" }}
+        >
+          {isFavorite ? "❤️" : "🤍"}
+        </span>
+      </div>
+
       <img
-        src={image}
-        alt={name}
+        src={product.image}
+        alt={product.name}
         className={styles.image}
         onClick={() => openProduct(product)}
       />
 
-      <h3 className={styles.title} onClick={() => openProduct(product)}>
-        {name}
-      </h3>
+      <p>{product.price} €</p>
 
-      <p>Prix : {price} €</p>
-      <p>Taille : {size}</p>
-      <p>Catégorie : {category}</p>
-      <p>État : {condition}</p>
-
-      <button className={styles.button} onClick={() => addToCart(product)}>
+      <button
+        className={styles.button}
+        onClick={() => addToCart(product)}
+      >
         Ajouter au panier
       </button>
     </div>
