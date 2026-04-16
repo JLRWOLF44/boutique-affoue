@@ -6,6 +6,9 @@ import Cart from "./components/Cart";
 import SearchBar from "./components/SearchBar";
 import CategoryButtons from "./components/CategoryButtons";
 import { products } from "./data/products";
+import Checkout from "./components/Checkout";
+import Auth from "./components/Auth";
+
 
 export default function App() {
   const [cart, setCart] = useState(() => {
@@ -18,6 +21,7 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [previousPage, setPreviousPage] = useState("shop");
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -94,15 +98,12 @@ export default function App() {
 
   function openProduct(product) {
     setSelectedProduct(product);
+    setPreviousPage(page);
     setPage("product");
   }
 
   function goBackFromProduct() {
-    if (currentCategory) {
-      setPage("category");
-    } else {
-      setPage("shop");
-    }
+    setPage(previousPage);
   }
 
   function handleSearchSubmit(e) {
@@ -122,6 +123,21 @@ export default function App() {
       alert("Catégorie non trouvée. Essaie : robe, veste, pull ou accessoire.");
     }
   }
+function goToCheckout() {
+  setPage("checkout");
+}
+
+function goBackToCart() {
+  setPage("cart");
+}
+
+function goToAuth() {
+  setPage("auth");
+}
+
+function goBackFromAuth() {
+  setPage("shop");
+}
 
   const categoryProducts = products.filter(
     (product) => product.category === currentCategory
@@ -134,9 +150,16 @@ export default function App() {
     0
   );
 
+  const totalFavorites = favorites.length;
+
   return (
     <div className="container">
-      <Header page={page} setPage={setPage} totalItems={totalItems} />
+      <Header
+        page={page}
+        setPage={setPage}
+        totalItems={totalItems}
+        totalFavorites={totalFavorites}
+      />
 
       {page === "shop" && (
         <>
@@ -185,6 +208,29 @@ export default function App() {
         </>
       )}
 
+      {page === "favorites" && (
+        <>
+          <h2>Mes favoris</h2>
+
+          {favorites.length === 0 ? (
+            <p>Aucun favori pour le moment.</p>
+          ) : (
+            <div className="products">
+              {favorites.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  addToCart={addToCart}
+                  openProduct={openProduct}
+                  toggleFavorite={toggleFavorite}
+                  favorites={favorites}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
       {page === "product" && selectedProduct && (
         <ProductDetail
           product={selectedProduct}
@@ -201,8 +247,16 @@ export default function App() {
           decreaseQuantity={decreaseQuantity}
           totalPrice={totalPrice}
           clearCart={clearCart}
+          goToCheckout={goToCheckout}
         />
       )}
+
+      {page === "checkout" && (
+        <Checkout cart={cart} totalPrice={totalPrice} goBack={goBackToCart} />
+      )}
+
+      {page === "auth" && <Auth goToShop={goBackFromAuth} />}
+
     </div>
   );
 }

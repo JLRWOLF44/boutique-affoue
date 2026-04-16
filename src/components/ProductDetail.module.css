@@ -134,3 +134,21 @@
     width: auto;
   }
 }
+.whatsappButton {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #25d366;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.whatsappButton:hover {
+  background: #1ebe5d;
+}
+.imageContainer {
+  overflow: hidden;
+  border-radius: 10px;
+}

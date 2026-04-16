@@ -7,6 +7,7 @@ export default function Cart({
   decreaseQuantity,
   totalPrice,
   clearCart,
+  goToCheckout,
 }) {
   return (
     <div className={styles.cart}>
@@ -54,11 +55,12 @@ export default function Cart({
 
           <h3>Total : {totalPrice} €</h3>
 
-          <button
-            className={styles.button}
-            onClick={clearCart}
-          >
+          <button className={styles.button} onClick={clearCart}>
             Vider le panier
+          </button>
+
+          <button className={styles.button} onClick={goToCheckout}>
+            Commander
           </button>
         </div>
       )}

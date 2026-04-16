@@ -1,3 +1,9 @@
+body {
+  background: #f5f5f5;
+  margin: ;
+  font-family: Arial,sans-serif;
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
@@ -181,4 +187,35 @@
     right: 0;
     border-right-color: var(--border);
   }
+  .products {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 10px;
+}
+
+/* tablette */
+@media (min-width: 768px) {
+  .products {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+}
+
+/* desktop */
+@media (min-width: 1024px) {
+  .products {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* grand écran */
+@media (min-width: 1400px) {
+  .products {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
 }

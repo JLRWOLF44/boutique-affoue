@@ -13,10 +13,24 @@ export default function ProductDetail({ product, addToCart, goBack }) {
   } = product;
 
   const [mainImage, setMainImage] = useState(images[0]);
-  const [zoomStyle, setZoomStyle] = useState({});
+  const [zoomStyle, setZoomStyle] = useState({
+    transform: "scale(1)",
+    transformOrigin: "center center",
+  });
+
+  const phoneNumber = "33612345678";
+
+  const whatsappMessage = `Bonjour, je suis intéressée par l'article "${name}" à ${price} €. Est-il toujours disponible ?`;
+
+  const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+    whatsappMessage
+  )}`;
 
   function handleMouseMove(e) {
-    const { left, top, width, height } = e.target.getBoundingClientRect();
+    if (window.innerWidth <= 768) return;
+
+    const { left, top, width, height } =
+      e.currentTarget.getBoundingClientRect();
 
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
@@ -28,8 +42,19 @@ export default function ProductDetail({ product, addToCart, goBack }) {
   }
 
   function handleMouseLeave() {
+    if (window.innerWidth <= 768) return;
+
     setZoomStyle({
       transform: "scale(1)",
+      transformOrigin: "center center",
+    });
+  }
+
+  function handleThumbnailClick(img) {
+    setMainImage(img);
+    setZoomStyle({
+      transform: "scale(1)",
+      transformOrigin: "center center",
     });
   }
 
@@ -58,8 +83,12 @@ export default function ProductDetail({ product, addToCart, goBack }) {
                 key={index}
                 src={img}
                 alt={`${name} ${index + 1}`}
-                className={styles.thumbnail}
-                onClick={() => setMainImage(img)}
+                className={
+                  mainImage === img
+                    ? `${styles.thumbnail} ${styles.active}`
+                    : styles.thumbnail
+                }
+                onClick={() => handleThumbnailClick(img)}
               />
             ))}
           </div>
@@ -69,9 +98,17 @@ export default function ProductDetail({ product, addToCart, goBack }) {
           <h2 className={styles.title}>{name}</h2>
           <p className={styles.price}>{price} €</p>
 
-          <p><strong>Taille :</strong> {size}</p>
-          <p><strong>Catégorie :</strong> {category}</p>
-          <p><strong>État :</strong> {condition}</p>
+          <p className={styles.info}>
+            <strong>Taille :</strong> {size}
+          </p>
+
+          <p className={styles.info}>
+            <strong>Catégorie :</strong> {category}
+          </p>
+
+          <p className={styles.info}>
+            <strong>État :</strong> {condition}
+          </p>
 
           <p className={styles.description}>{description}</p>
 
@@ -81,6 +118,15 @@ export default function ProductDetail({ product, addToCart, goBack }) {
           >
             Ajouter au panier
           </button>
+
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.whatsappButton}
+          >
+            Contacter sur WhatsApp
+          </a>
         </div>
       </div>
     </div>

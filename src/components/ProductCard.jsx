@@ -9,36 +9,55 @@ export default function ProductCard({
 }) {
   const isFavorite = favorites.some((item) => item.id === product.id);
 
+  const {
+    name,
+    price,
+    image,
+    size,
+    condition,
+    brand,
+  } = product;
+
+  const displayedBrand = brand || name;
+  const finalPrice = (price + 1.65).toFixed(2);
+
   return (
     <div className={styles.card}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h3 className={styles.title} onClick={() => openProduct(product)}>
-          {product.name}
-        </h3>
+      <div className={styles.imageWrapper} onClick={() => openProduct(product)}>
+        <img src={image} alt={name} className={styles.image} />
 
-        <span
-          onClick={() => toggleFavorite(product)}
-          style={{ cursor: "pointer", fontSize: "20px" }}
+        <button
+          type="button"
+          className={styles.favoriteButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(product);
+          }}
         >
           {isFavorite ? "❤️" : "🤍"}
-        </span>
+        </button>
       </div>
 
-      <img
-        src={product.image}
-        alt={product.name}
-        className={styles.image}
-        onClick={() => openProduct(product)}
-      />
+      <div className={styles.content}>
+        <h3 className={styles.brand} onClick={() => openProduct(product)}>
+          {displayedBrand}
+        </h3>
 
-      <p>{product.price} €</p>
+        <p className={styles.meta}>
+          {size} · {condition}
+        </p>
 
-      <button
-        className={styles.button}
-        onClick={() => addToCart(product)}
-      >
-        Ajouter au panier
-      </button>
+        <p className={styles.price}>{price.toFixed(2)} €</p>
+        <p className={styles.priceIncl}>{finalPrice} € incl.</p>
+
+        <button
+          type="button"
+          className={styles.cartButton}
+          onClick={() => addToCart(product)}
+        >
+          Ajouter au panier
+        </button>
+      </div>
     </div>
   );
 }
