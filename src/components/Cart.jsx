@@ -11,58 +11,77 @@ export default function Cart({
 }) {
   return (
     <div className={styles.cart}>
-      <h2>Panier</h2>
+      <h2 className={styles.title}>Panier</h2>
 
       {cart.length === 0 ? (
-        <p>Le panier est vide.</p>
+        <p className={styles.empty}>Le panier est vide.</p>
       ) : (
-        <div>
-          {cart.map((item) => (
-            <div key={item.id} className={styles.item}>
-              <img
-                src={item.image}
-                alt={item.name}
-                width="100"
-                className={styles.image}
-              />
-              <h3>{item.name}</h3>
-              <p>Prix : {item.price} €</p>
-              <p>Quantité : {item.quantity}</p>
-              <p>Sous-total : {item.price * item.quantity} €</p>
+        <>
+          <div className={styles.list}>
+            {cart.map((item) => (
+              <div key={item.id} className={styles.item}>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className={styles.image}
+                />
 
-              <button
-                className={styles.button}
-                onClick={() => decreaseQuantity(item.id)}
-              >
-                -
+                <div className={styles.info}>
+                  <h3 className={styles.name}>{item.name}</h3>
+                  <p className={styles.meta}>Prix : {item.price} €</p>
+                  <p className={styles.meta}>Quantité : {item.quantity}</p>
+                  <p className={styles.subtotal}>
+                    Sous-total : {item.price * item.quantity} €
+                  </p>
+
+                  <div className={styles.actions}>
+                    <button
+                      type="button"
+                      className={styles.button}
+                      onClick={() => decreaseQuantity(item.id)}
+                    >
+                      -
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.button}
+                      onClick={() => increaseQuantity(item.id)}
+                    >
+                      +
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.button}
+                      onClick={() => removeFromCart(item.id)}
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.footer}>
+            <h3 className={styles.total}>Total : {totalPrice} €</h3>
+
+            <div className={styles.footerButtons}>
+              <button type="button" className={styles.button} onClick={clearCart}>
+                Vider le panier
               </button>
 
               <button
-                className={styles.button}
-                onClick={() => increaseQuantity(item.id)}
+                type="button"
+                className={styles.checkoutButton}
+                onClick={goToCheckout}
               >
-                +
-              </button>
-
-              <button
-                className={styles.button}
-                onClick={() => removeFromCart(item.id)}
-              >
-                Supprimer
+                Commander
               </button>
             </div>
-          ))}
-
-          <h3>Total : {totalPrice} €</h3>
-
-          <button className={styles.button} onClick={clearCart}>
-            Vider le panier
-          </button>
-
-          <button className={styles.button} onClick={goToCheckout}>
-            Commander
-          </button>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

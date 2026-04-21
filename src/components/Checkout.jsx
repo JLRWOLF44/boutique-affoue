@@ -22,7 +22,6 @@ export default function Checkout({ cart, totalPrice, goBack }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
     alert("Commande envoyée ! (version test)");
     console.log("Client :", formData);
     console.log("Panier :", cart);
@@ -30,7 +29,7 @@ export default function Checkout({ cart, totalPrice, goBack }) {
 
   return (
     <div className={styles.wrapper}>
-      <button className={styles.backButton} onClick={goBack}>
+      <button type="button" className={styles.backButton} onClick={goBack}>
         Retour au panier
       </button>
 
@@ -97,9 +96,8 @@ export default function Checkout({ cart, totalPrice, goBack }) {
 
             <textarea
               className={`${styles.input} ${styles.fullWidth}`}
-              
               name="address"
-              placeholder="Adresse"
+              placeholder="Adresse complète"
               value={formData.address}
               onChange={handleChange}
               rows="2"

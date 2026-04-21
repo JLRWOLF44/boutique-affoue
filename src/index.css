@@ -1,7 +1,7 @@
 body {
-  background: #f5f5f5;
   margin: 0;
   font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
 }
 
 * {
@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-  padding: 16px;
+  padding: 12px;
 }
 
 .products {
@@ -18,15 +18,26 @@ body {
   gap: 16px;
 }
 
-/* tablette */
+h2 {
+  font-size: 20px;
+  margin: 12px 0;
+}
+
 @media (min-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
   .products {
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
   }
+
+  h2 {
+    font-size: 28px;
+  }
 }
 
-/* desktop */
 @media (min-width: 1024px) {
   .products {
     grid-template-columns: repeat(4, 1fr);
@@ -34,7 +45,6 @@ body {
   }
 }
 
-/* grand écran */
 @media (min-width: 1400px) {
   .products {
     grid-template-columns: repeat(5, 1fr);

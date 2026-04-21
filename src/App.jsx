@@ -3,12 +3,9 @@ import Header from "./components/Header";
 import ProductCard from "./components/ProductCard";
 import ProductDetail from "./components/ProductDetail";
 import Cart from "./components/Cart";
-import SearchBar from "./components/SearchBar";
-import CategoryButtons from "./components/CategoryButtons";
-import { products } from "./data/products";
 import Checkout from "./components/Checkout";
 import Auth from "./components/Auth";
-
+import { products } from "./data/products";
 
 export default function App() {
   const [cart, setCart] = useState(() => {
@@ -16,16 +13,24 @@ export default function App() {
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
+  const [favorites, setFavorites] = useState(() => {
+    const savedFavorites = localStorage.getItem("favorites");
+    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  });
+
   const [page, setPage] = useState("shop");
   const [currentCategory, setCurrentCategory] = useState("");
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [favorites, setFavorites] = useState([]);
   const [previousPage, setPreviousPage] = useState("shop");
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   function addToCart(product) {
     setCart((prevCart) => {
@@ -123,21 +128,18 @@ export default function App() {
       alert("Catégorie non trouvée. Essaie : robe, veste, pull ou accessoire.");
     }
   }
-function goToCheckout() {
-  setPage("checkout");
-}
 
-function goBackToCart() {
-  setPage("cart");
-}
+  function goToCheckout() {
+    setPage("checkout");
+  }
 
-function goToAuth() {
-  setPage("auth");
-}
+  function goBackToCart() {
+    setPage("cart");
+  }
 
-function goBackFromAuth() {
-  setPage("shop");
-}
+  function goBackFromAuth() {
+    setPage("shop");
+  }
 
   const categoryProducts = products.filter(
     (product) => product.category === currentCategory
@@ -159,19 +161,15 @@ function goBackFromAuth() {
         setPage={setPage}
         totalItems={totalItems}
         totalFavorites={totalFavorites}
+        openCategory={openCategory}
+        search={search}
+        setSearch={setSearch}
+        handleSearchSubmit={handleSearchSubmit}
       />
 
       {page === "shop" && (
         <>
           <h2>Ma boutique</h2>
-
-          <SearchBar
-            search={search}
-            setSearch={setSearch}
-            handleSearchSubmit={handleSearchSubmit}
-          />
-
-          <CategoryButtons openCategory={openCategory} />
 
           <div className="products">
             {products.map((product) => (
@@ -252,11 +250,14 @@ function goBackFromAuth() {
       )}
 
       {page === "checkout" && (
-        <Checkout cart={cart} totalPrice={totalPrice} goBack={goBackToCart} />
+        <Checkout
+          cart={cart}
+          totalPrice={totalPrice}
+          goBack={goBackToCart}
+        />
       )}
 
       {page === "auth" && <Auth goToShop={goBackFromAuth} />}
-
     </div>
   );
 }

@@ -9,15 +9,7 @@ export default function ProductCard({
 }) {
   const isFavorite = favorites.some((item) => item.id === product.id);
 
-  const {
-    name,
-    price,
-    image,
-    size,
-    condition,
-    brand,
-  } = product;
-
+  const { name, price, image, size, condition, brand } = product;
   const displayedBrand = brand || name;
   const finalPrice = (price + 1.65).toFixed(2);
 

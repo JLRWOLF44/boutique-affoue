@@ -1,154 +1,235 @@
-.wrapper {
-  background: white;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .backButton {
-  margin-bottom: 20px;
-  padding: 10px 14px;
+  align-self: flex-start;
   border: none;
-  background: black;
+  background: #111;
   color: white;
-  border-radius: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .backButton:hover {
   background: #333;
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 20px;
 }
 
-.left,
-.right {
-  width: 100%;
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
-.imageContainer {
+.mainImageWrapper {
+  background: #f3f3f3;
+  border-radius: 16px;
   overflow: hidden;
-  border-radius: 10px;
-  width: 100%;
 }
 
 .mainImage {
   width: 100%;
-  border-radius: 10px;
   display: block;
-  transition: transform 0.2s ease;
-  cursor: zoom-in;
+  object-fit: cover;
+  aspect-ratio: 3 / 4;
 }
 
-.thumbnails {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 12px;
+.thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.thumbButton {
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  background: #f3f3f3;
+  cursor: pointer;
+}
+
+.thumbActive {
+  border-color: #111;
 }
 
 .thumbnail {
-  width: 70px;
-  height: 70px;
+  width: 100%;
+  height: 100%;
+  display: block;
   object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 2px solid transparent;
+  aspect-ratio: 1 / 1;
 }
 
-.thumbnail:hover {
-  border: 2px solid black;
+.sidebar {
+  width: 100%;
 }
 
-.active {
-  border: 2px solid black;
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .title {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 24px;
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.meta {
+  margin: 0 0 18px 0;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.brand {
+  color: #0f8f8f;
+  font-weight: 600;
+}
+
+.priceBlock {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 18px;
 }
 
 .price {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 15px;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
 }
 
-.info {
-  margin-bottom: 10px;
+
+
+
+.infoTable {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 18px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.infoLabel {
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.infoValue {
+  color: #111;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.descriptionBlock {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 18px;
+}
+
+.sectionTitle {
+  margin: 0 0 10px 0;
+  font-size: 18px;
 }
 
 .description {
-  margin-top: 20px;
-  line-height: 1.5;
+  margin: 0;
+  color: #374151;
+  line-height: 1.6;
 }
 
-.cartButton {
-  width: 100%;
-  margin-top: 20px;
-  padding: 12px 16px;
-  border: none;
-  background: black;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.buyButton,
+.offerButton,
+.messageButton {
+  border-radius: 12px;
+  padding: 14px 18px;
   font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: 0.2s ease;
 }
 
-.cartButton:hover {
-  background: #333;
+.buyButton {
+  border: none;
+  background: #0f8f8f;
+  color: white;
+  font-weight: 600;
 }
 
-@media (min-width: 768px) {
-  .wrapper {
-    padding: 20px;
+.buyButton:hover {
+  background: #0b7474;
+}
+
+
+
+.messageButton {
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #111;
+  font-weight: 500;
+}
+
+.messageButton:hover {
+  background: #f9fafb;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.6fr) minmax(320px, 420px);
+    align-items: start;
   }
 
-  .content {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 30px;
+  .gallery {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 12px;
   }
 
-  .left,
-  .right {
-    flex: 1;
+  .mainImageWrapper {
+    height: 100%;
   }
 
   .mainImage {
-    max-width: 500px;
+    height: 100%;
+    min-height: 620px;
   }
 
-  .thumbnail {
-    width: 80px;
-    height: 80px;
+  .thumbnailGrid {
+    grid-template-columns: repeat(2, 1fr);
+    align-content: start;
   }
 
-  .cartButton {
-    width: auto;
+  .card {
+    position: sticky;
+    top: 20px;
   }
-}
-.whatsappButton {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 12px 16px;
-  background: #25d366;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
-.whatsappButton:hover {
-  background: #1ebe5d;
-}
-.imageContainer {
-  overflow: hidden;
-  border-radius: 10px;
 }
