@@ -11,7 +11,8 @@ export default function ProductCard({
 
   const { name, price, image, size, condition, brand } = product;
   const displayedBrand = brand || name;
-  const finalPrice = (price + 1.65).toFixed(2);
+  const safePrice = typeof price === "number" ? price : 0;
+ 
 
   return (
     <div className={styles.card}>
@@ -39,8 +40,10 @@ export default function ProductCard({
           {size} · {condition}
         </p>
 
-        <p className={styles.price}>{price.toFixed(2)} €</p>
-        <p className={styles.priceIncl}>{finalPrice} € incl.</p>
+        <p className={styles.price}>{safePrice.toFixed(2)} €</p>
+        
+
+
 
         <button
           type="button"

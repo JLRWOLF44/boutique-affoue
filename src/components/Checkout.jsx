@@ -22,50 +22,31 @@ export default function Checkout({ cart, totalPrice, goBack }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    alert("Commande envoyée ! (version test)");
+
+    if (cart.length === 0) {
+      alert("Votre panier est vide.");
+      return;
+    }
+
+    alert("Commande envoyée ! Version test.");
     console.log("Client :", formData);
     console.log("Panier :", cart);
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.checkout}>
       <button type="button" className={styles.backButton} onClick={goBack}>
-        Retour au panier
+        ← Retour au panier
       </button>
 
-      <h2 className={styles.title}>Finaliser la commande</h2>
+      <h2 className={styles.title}>Finaliser ma commande</h2>
 
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Récapitulatif</h3>
+      <div className={styles.layout}>
+        <form className={styles.formCard} onSubmit={handleSubmit}>
+          <h3>Informations client</h3>
 
-        {cart.length === 0 ? (
-          <p>Votre panier est vide.</p>
-        ) : (
-          <div className={styles.summaryBox}>
-            {cart.map((item) => (
-              <div key={item.id} className={styles.summaryItem}>
-                <p>
-                  <strong>{item.name}</strong>
-                </p>
-                <p>
-                  {item.quantity} x {item.price} €
-                </p>
-                <p>Sous-total : {item.quantity * item.price} €</p>
-              </div>
-            ))}
-
-            <p className={styles.total}>Total : {totalPrice} €</p>
-          </div>
-        )}
-      </div>
-
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Informations client</h3>
-
-        <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.formGrid}>
             <input
-              className={styles.input}
               type="text"
               name="firstName"
               placeholder="Prénom"
@@ -75,7 +56,6 @@ export default function Checkout({ cart, totalPrice, goBack }) {
             />
 
             <input
-              className={styles.input}
               type="text"
               name="lastName"
               placeholder="Nom"
@@ -85,7 +65,6 @@ export default function Checkout({ cart, totalPrice, goBack }) {
             />
 
             <input
-              className={styles.input}
               type="tel"
               name="phone"
               placeholder="Téléphone"
@@ -94,18 +73,7 @@ export default function Checkout({ cart, totalPrice, goBack }) {
               required
             />
 
-            <textarea
-              className={`${styles.input} ${styles.fullWidth}`}
-              name="address"
-              placeholder="Adresse complète"
-              value={formData.address}
-              onChange={handleChange}
-              rows="2"
-              required
-            />
-
             <input
-              className={styles.input}
               type="text"
               name="city"
               placeholder="Ville"
@@ -115,7 +83,6 @@ export default function Checkout({ cart, totalPrice, goBack }) {
             />
 
             <input
-              className={styles.input}
               type="text"
               name="postalCode"
               placeholder="Code postal"
@@ -123,12 +90,54 @@ export default function Checkout({ cart, totalPrice, goBack }) {
               onChange={handleChange}
               required
             />
+
+            <textarea
+              name="address"
+              placeholder="Adresse complète"
+              value={formData.address}
+              onChange={handleChange}
+              rows="3"
+              required
+              className={styles.fullWidth}
+            />
           </div>
 
-          <button className={styles.button} type="submit">
+          <button type="submit" className={styles.submitButton}>
             Valider la commande
           </button>
         </form>
+
+        <aside className={styles.summaryCard}>
+          <h3>Récapitulatif</h3>
+
+          {cart.length === 0 ? (
+            <p className={styles.empty}>Votre panier est vide.</p>
+          ) : (
+            <>
+              <div className={styles.items}>
+                {cart.map((item) => (
+                  <div key={item.id} className={styles.item}>
+                    <img src={item.image} alt={item.name} />
+
+                    <div>
+                      <p className={styles.itemName}>{item.name}</p>
+                      <p className={styles.itemMeta}>
+                        {item.quantity} × {item.price} €
+                      </p>
+                    </div>
+
+                    <strong>{item.quantity * item.price} €</strong>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.total}>
+                <span>Total</span>
+                <strong>{totalPrice} €</strong>
+              </div>
+            </>
+          )}
+        </aside>
       </div>
     </div>
   );

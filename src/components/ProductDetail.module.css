@@ -203,6 +203,21 @@
   background: #f9fafb;
 }
 
+.mainImageWrapper {
+  background: #f3f3f3;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.mainImage {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 3 / 4;
+  transition: transform 0.2s ease;
+  cursor: zoom-in;
+}
+
 @media (min-width: 900px) {
   .layout {
     grid-template-columns: minmax(0, 1.6fr) minmax(320px, 420px);

@@ -15,16 +15,51 @@ export default function ProductDetail({ product, addToCart, goBack }) {
   } = product;
 
   const [mainImage, setMainImage] = useState(images[0]);
+  const [zoomStyle, setZoomStyle] = useState({
+    transform: "scale(1)",
+    transformOrigin: "center center",
+  });
 
   const displayedBrand = brand || "Sans marque";
   const displayedColor = color || "Non précisée";
-  const finalPrice = (price + 1.65).toFixed(2);
 
   const phoneNumber = "33612345678";
   const whatsappMessage = `Bonjour, je suis intéressée par l'article "${name}" à ${price} €. Est-il toujours disponible ?`;
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     whatsappMessage
   )}`;
+
+  function handleMouseMove(e) {
+    if (window.innerWidth <= 768) return;
+
+    const { left, top, width, height } =
+      e.currentTarget.getBoundingClientRect();
+
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+
+    setZoomStyle({
+      transformOrigin: `${x}% ${y}%`,
+      transform: "scale(2)",
+    });
+  }
+
+  function handleMouseLeave() {
+    if (window.innerWidth <= 768) return;
+
+    setZoomStyle({
+      transform: "scale(1)",
+      transformOrigin: "center center",
+    });
+  }
+
+  function handleThumbnailClick(img) {
+    setMainImage(img);
+    setZoomStyle({
+      transform: "scale(1)",
+      transformOrigin: "center center",
+    });
+  }
 
   return (
     <div className={styles.page}>
@@ -35,7 +70,14 @@ export default function ProductDetail({ product, addToCart, goBack }) {
       <div className={styles.layout}>
         <div className={styles.gallery}>
           <div className={styles.mainImageWrapper}>
-            <img src={mainImage} alt={name} className={styles.mainImage} />
+            <img
+              src={mainImage}
+              alt={name}
+              className={styles.mainImage}
+              style={zoomStyle}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            />
           </div>
 
           <div className={styles.thumbnailGrid}>
@@ -48,7 +90,7 @@ export default function ProductDetail({ product, addToCart, goBack }) {
                     ? `${styles.thumbButton} ${styles.thumbActive}`
                     : styles.thumbButton
                 }
-                onClick={() => setMainImage(img)}
+                onClick={() => handleThumbnailClick(img)}
               >
                 <img
                   src={img}
@@ -71,7 +113,6 @@ export default function ProductDetail({ product, addToCart, goBack }) {
 
             <div className={styles.priceBlock}>
               <p className={styles.price}>{price.toFixed(2)} €</p>
-         
             </div>
 
             <div className={styles.infoTable}>
@@ -106,24 +147,24 @@ export default function ProductDetail({ product, addToCart, goBack }) {
               <p className={styles.description}>{description}</p>
             </div>
 
-          <div className={styles.actions}>
-  <button
-    type="button"
-    className={styles.buyButton}
-    onClick={() => addToCart(product)}
-  >
-    Ajouter au panier
-  </button>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.buyButton}
+                onClick={() => addToCart(product)}
+              >
+                Ajouter au panier
+              </button>
 
-  <a
-    href={whatsappLink}
-    target="_blank"
-    rel="noreferrer"
-    className={styles.messageButton}
-  >
-    Contacter
-  </a>
-</div>
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.messageButton}
+              >
+                Contacter
+              </a>
+            </div>
           </div>
         </aside>
       </div>

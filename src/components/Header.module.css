@@ -1,39 +1,78 @@
 .header {
   background: white;
   padding: 14px;
-  margin-bottom: 20px;
   border-radius: 16px;
+  margin-bottom: 20px;
   box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 50;
 }
 
-.mainRow {
+.logo {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+}
+
+/* overlay */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(3px);
+  z-index: 90;
+  animation: fadeIn 0.2s ease;
+}
+
+/* mobile */
+
+.mobileHeader {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+  z-index: 100;
 }
 
-.logoButton {
+.mobileTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobileTop .logo {
+  font-size: 24px;
+  line-height: 1.1;
+  max-width: 250px;
+}
+
+.burger {
   border: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
+  background: #111;
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   cursor: pointer;
-  color: #111;
-  text-align: left;
+  font-size: 22px;
+  flex-shrink: 0;
 }
 
 .searchForm {
   display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
 .searchInput {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid #d4d4d8;
   border-radius: 10px;
@@ -49,76 +88,18 @@
 
 .searchButton {
   border: none;
-  padding: 9px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 13px;
   background: #111;
   color: white;
-}
-
-.searchButton:hover {
-  background: #333;
-}
-
-.mobileActions {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 6px;
-}
-
-.desktopActions {
-  display: none;
-}
-
-.lightButton,
-.activeLight,
-.darkButton,
-.activeDark {
-  border: none;
   border-radius: 10px;
-  padding: 8px 8px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  font-size: 12px;
-  min-height: 36px;
-  transition: 0.2s ease;
-}
-
-.lightButton {
-  background: white;
-  color: #111;
-  border: 1px solid #d4d4d8;
-}
-
-.activeLight {
-  background: #efefef;
-  color: #111;
-  border: 1px solid #d4d4d8;
-}
-
-.darkButton {
-  background: #111;
-  color: white;
-}
-
-.darkButton:hover {
-  background: #333;
-}
-
-.activeDark {
-  background: #5a5a5a;
-  color: white;
-}
-
-.dropdown {
-  position: static;
-  width: 100%;
-  margin-top: 4px;
+  flex-shrink: 0;
 }
 
 .mobileMenu {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   background: #fafafa;
   border: 1px solid #ececec;
@@ -126,84 +107,176 @@
   padding: 10px;
 }
 
-.mobileMenuItem {
-  border: none;
+.mobileMenu button {
+  border: 1px solid #e5e7eb;
   background: white;
   border-radius: 10px;
   padding: 10px 12px;
   text-align: left;
   cursor: pointer;
   font-size: 14px;
-  border: 1px solid #e5e7eb;
 }
 
-.mobileMenuItem:hover {
-  background: #f3f4f6;
+.menuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.mobileMega {
+  margin-top: 4px;
+}
+
+/* desktop */
+
+.desktopHeader {
+  display: none;
 }
 
 @media (min-width: 900px) {
-  .header {
-    padding: 18px 20px;
+  .mobileHeader {
+    display: none;
   }
 
-  .mainRow {
+  .desktopHeader {
     display: grid;
     grid-template-columns: 220px minmax(320px, 1fr) auto;
     gap: 18px;
     align-items: center;
+    position: relative;
+    z-index: 100;
   }
 
-  .logoButton {
+  .desktopHeader .logo {
     font-size: 30px;
   }
 
   .searchForm {
-    flex-direction: row;
-    align-items: center;
+    display: flex;
+    gap: 10px;
   }
 
   .searchInput {
-    flex: 1;
     font-size: 15px;
     padding: 12px 14px;
   }
 
-  .searchButton {
-    width: auto;
-    white-space: nowrap;
+  .searchButtonDesktop {
+    border: none;
+    background: #111;
+    color: white;
+    border-radius: 10px;
     padding: 12px 16px;
-    font-size: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s ease, background 0.2s ease;
   }
 
-  .mobileActions,
-  .mobileMenu {
-    display: none;
+  .searchButtonDesktop:hover {
+    background: #333;
   }
 
-  .desktopActions {
+  .desktopButtons {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     justify-content: flex-end;
-    align-items: center;
   }
 
-  .lightButton,
-  .activeLight,
-  .darkButton,
-  .activeDark {
-    width: auto;
-    min-height: auto;
+  .desktopButtons button {
+    border: none;
+    background: #111;
+    color: white;
+    border-radius: 10px;
     padding: 11px 16px;
-    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
   }
 
-  .dropdown {
+  .desktopButtons button:hover {
+    background: #333;
+  }
+
+  .desktopDropdown {
     position: absolute;
     top: calc(100% + 12px);
-    left: 0;
+    left: 14px;
     width: 780px;
     max-width: min(780px, 92vw);
     z-index: 100;
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+    animation: menuEnter 0.25s ease;
+  }
+
+  .closeMega {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 200;
+    transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+  }
+
+  .closeMega:hover {
+    background: rgba(0, 0, 0, 0.75);
+  }
+}
+
+/* micro interactions */
+
+.burger,
+.searchButton,
+.closeBtn {
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+}
+
+.burger:active,
+.searchButton:active,
+.searchButtonDesktop:active,
+.closeMega:active,
+.closeBtn:active,
+.desktopButtons button:active,
+.mobileMenu button:active {
+  transform: scale(0.97);
+}
+
+/* animations */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes menuEnter {
+  from {
+    transform: translateY(-8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
   }
 }

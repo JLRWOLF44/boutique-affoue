@@ -66,7 +66,7 @@ export const products = [
   },
   {
     id: 5,
-    name: "Sac à main",
+    name: "Sac à main rose",
     brand: "Zara",
     color: "Bleu",
     price: 18,
@@ -79,7 +79,7 @@ export const products = [
   },
   {
     id: 6,
-    name: "Sac à main",
+    name: "Sac à main bleu",
     brand: "Zara",
     color: "Bleu",
     price: 18,
