@@ -33,6 +33,7 @@ export default function MegaMenu({ setPage, openCategory }) {
 
     setPage("shop");
   }
+  
 
   return (
     <div className={styles.wrapper}>
@@ -50,11 +51,14 @@ export default function MegaMenu({ setPage, openCategory }) {
           >
             {menu.title}
           </button>
+          
         ))}
       </div>
 
       <div className={styles.content}>
         <h3 className={styles.title}>{activeMenu.title}</h3>
+
+        
 
         <div className={styles.grid}>
           {activeMenu.categories.map((item) => (

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./Checkout.module.css";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Checkout({ cart, totalPrice, goBack }) {
   const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@ export default function Checkout({ cart, totalPrice, goBack }) {
     postalCode: "",
   });
 
+  const [isSending, setIsSending] = useState(false);
+
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -20,7 +23,7 @@ export default function Checkout({ cart, totalPrice, goBack }) {
     }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (cart.length === 0) {
@@ -28,9 +31,31 @@ export default function Checkout({ cart, totalPrice, goBack }) {
       return;
     }
 
-    alert("Commande envoyée ! Version test.");
-    console.log("Client :", formData);
-    console.log("Panier :", cart);
+    setIsSending(true);
+
+    const order = {
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      phone: formData.phone,
+      address: formData.address,
+      city: formData.city,
+      postal_code: formData.postalCode,
+      cart: cart,
+      total_price: totalPrice,
+    };
+
+    const { error } = await supabase.from("orders").insert([order]);
+
+    setIsSending(false);
+
+    if (error) {
+      console.error("Erreur Supabase :", error);
+      alert("Erreur lors de l'envoi de la commande.");
+      return;
+    }
+
+    alert("Commande envoyée avec succès !");
+    console.log("Commande enregistrée :", order);
   }
 
   return (
@@ -102,8 +127,12 @@ export default function Checkout({ cart, totalPrice, goBack }) {
             />
           </div>
 
-          <button type="submit" className={styles.submitButton}>
-            Valider la commande
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isSending}
+          >
+            {isSending ? "Envoi en cours..." : "Valider la commande"}
           </button>
         </form>
 

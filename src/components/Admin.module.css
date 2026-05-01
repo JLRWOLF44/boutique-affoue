@@ -1,0 +1,149 @@
+.admin {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+.header p {
+  margin: 4px 0 0;
+  color: #6b7280;
+}
+
+.header button {
+  border: none;
+  background: #111;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.orders {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #ececec;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.cardHeader h3 {
+  margin: 0;
+}
+
+.cardHeader span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.customer p {
+  margin: 6px 0;
+}
+
+.products {
+  margin-top: 16px;
+}
+
+.products h4 {
+  margin-bottom: 10px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #ececec;
+  font-size: 18px;
+}
+.login {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+}
+
+.login input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.login button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.statusBox {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statusBox label {
+  font-weight: 600;
+}
+
+.statusBox select {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #d4d4d8;
+  background: white;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+  }
+
+  .item {
+    flex-direction: column;
+  }
+}

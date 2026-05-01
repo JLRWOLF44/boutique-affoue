@@ -1,276 +1,181 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import "./App.css";
+
 import Header from "./components/Header";
 import ProductCard from "./components/ProductCard";
-import ProductDetail from "./components/ProductDetail";
-import Cart from "./components/Cart";
-import SearchBar from "./components/SearchBar";
 
-import { products } from "./data/products";
+import Cart from "./components/Cart";
+import Favorites from "./components/Favorites";
 import Checkout from "./components/Checkout";
 import Auth from "./components/Auth";
+import Admin from "./components/Admin";
+
+import { supabase } from "./lib/supabaseClient";
+import ProductDetail from "./components/ProductDetail";
 
 export default function App() {
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
-
   const [page, setPage] = useState("shop");
-  const [currentCategory, setCurrentCategory] = useState("");
-  const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const [previousPage, setPreviousPage] = useState("shop");
 
-  // UX amélioration
-  const [showCartMessage, setShowCartMessage] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [search, setSearch] = useState("");
 
+  // 🔥 PRODUITS SUPABASE
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // 🔥 ROUTE /admin
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  // bouton retour en haut
-  useEffect(() => {
-    function handleScroll() {
-      setShowScrollTop(window.scrollY > 300);
+    if (window.location.pathname === "/admin") {
+      setPage("admin");
     }
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  function addToCart(product) {
-    setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.id === product.id);
+  // 🔥 FETCH PRODUITS
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-      if (existingProduct) {
-        return prevCart.map((item) =>
+  async function fetchProducts() {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_sold", false);
+
+    if (error) {
+      console.error("Erreur produits :", error);
+    } else {
+      setProducts(data);
+    }
+
+    setLoadingProducts(false);
+  }
+
+  function openProduct(product) {
+    setSelectedProduct(product);
+    setPage("product");
+  }
+
+  function addToCart(product) {
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+
+      if (existing) {
+        return prev.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
 
-      return [...prevCart, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1 }];
     });
-
-    // message UX
-    setShowCartMessage(true);
-    setTimeout(() => setShowCartMessage(false), 2000);
-  }
-
-  function toggleFavorite(product) {
-    setFavorites((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
-      return exists
-        ? prev.filter((item) => item.id !== product.id)
-        : [...prev, product];
-    });
-  }
-
-  function clearCart() {
-    setCart([]);
   }
 
   function removeFromCart(productId) {
     setCart((prev) => prev.filter((item) => item.id !== productId));
   }
 
-  function increaseQuantity(productId) {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
+  function toggleFavorite(product) {
+    setFavorites((prev) => {
+      const exists = prev.find((p) => p.id === product.id);
+
+      if (exists) {
+        return prev.filter((p) => p.id !== product.id);
+      }
+
+      return [...prev, product];
+    });
   }
 
-  function decreaseQuantity(productId) {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  }
-
-  function openCategory(category) {
-    setCurrentCategory(category);
-    setPage("category");
-  }
-
-  function goBackToShop() {
-    setCurrentCategory("");
-    setSearch("");
+  function goToShop() {
     setPage("shop");
-  }
-
-  function openProduct(product) {
-    setSelectedProduct(product);
-    setPreviousPage(page);
-    setPage("product");
-  }
-
-  function goBackFromProduct() {
-    setPage(previousPage);
+    setSelectedProduct(null);
   }
 
   function handleSearchSubmit(e) {
     e.preventDefault();
-
-    const value = search.toLowerCase().trim();
-
-    if (value.includes("robe")) openCategory("Robe");
-    else if (value.includes("veste")) openCategory("Veste");
-    else if (value.includes("pull")) openCategory("Pull");
-    else if (value.includes("accessoire")) openCategory("Accessoire");
-    else alert("Catégorie non trouvée.");
   }
 
-  function goToCheckout() {
-    setPage("checkout");
-  }
-
-  function goBackToCart() {
-    setPage("cart");
-  }
-
-  function goBackFromAuth() {
-    setPage("shop");
-  }
-
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  const categoryProducts = products.filter(
-    (p) => p.category === currentCategory
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(search.toLowerCase())
   );
-
-  const totalItems = cart.reduce((t, i) => t + i.quantity, 0);
-  const totalPrice = cart.reduce((t, i) => t + i.price * i.quantity, 0);
-  const totalFavorites = favorites.length;
 
   return (
     <div className="container">
-      {/* message panier */}
-      {showCartMessage && (
-        <div className="cartMessage">✔ Article ajouté au panier</div>
-      )}
-
       <Header
         page={page}
         setPage={setPage}
-        totalItems={totalItems}
-        totalFavorites={totalFavorites}
-        openCategory={openCategory}
+        totalItems={cart.length}
+        totalFavorites={favorites.length}
         search={search}
         setSearch={setSearch}
         handleSearchSubmit={handleSearchSubmit}
       />
 
+      {/* 🛍️ BOUTIQUE */}
       {page === "shop" && (
         <>
           <h2>Ma boutique</h2>
 
-          
-
           <div className="products">
-            {products.map((product, index) => (
-              <ProductCard
-                key={`${product.id}-${index}`}
-                product={product}
-                addToCart={addToCart}
-                openProduct={openProduct}
-                toggleFavorite={toggleFavorite}
-                favorites={favorites}
-              />
-            ))}
+            {loadingProducts ? (
+              <p>Chargement...</p>
+            ) : (
+              filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  addToCart={addToCart}
+                  openProduct={openProduct}
+                  toggleFavorite={toggleFavorite}
+                  favorites={favorites}
+                />
+              ))
+            )}
           </div>
         </>
       )}
 
-      {page === "category" && (
-        <>
-          <button onClick={goBackToShop}>Retour</button>
-          <h2>{currentCategory}</h2>
-
-          <div className="products">
-            {categoryProducts.map((product, index) => (
-              <ProductCard
-                key={`${product.id}-${index}`}
-                product={product}
-                addToCart={addToCart}
-                openProduct={openProduct}
-                toggleFavorite={toggleFavorite}
-                favorites={favorites}
-              />
-            ))}
-          </div>
-        </>
-      )}
-
-      {page === "favorites" && (
-        <>
-          <h2>Mes favoris</h2>
-
-          <div className="products">
-            {favorites.map((product, index) => (
-              <ProductCard
-                key={`${product.id}-${index}`}
-                product={product}
-                addToCart={addToCart}
-                openProduct={openProduct}
-                toggleFavorite={toggleFavorite}
-                favorites={favorites}
-              />
-            ))}
-          </div>
-        </>
-      )}
-
+      {/* 📄 PRODUIT */}
       {page === "product" && selectedProduct && (
         <ProductDetail
           product={selectedProduct}
           addToCart={addToCart}
-          goBack={goBackFromProduct}
+          goBack={goToShop}
         />
       )}
 
+      {/* 🛒 PANIER */}
       {page === "cart" && (
         <Cart
           cart={cart}
           removeFromCart={removeFromCart}
-          increaseQuantity={increaseQuantity}
-          decreaseQuantity={decreaseQuantity}
-          totalPrice={totalPrice}
-          clearCart={clearCart}
-          goToCheckout={goToCheckout}
-          setPage={setPage}
+          goToCheckout={() => setPage("checkout")}
         />
       )}
 
+      {/* ❤️ FAVORIS */}
+      {page === "favorites" && (
+        <Favorites
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+          openProduct={openProduct}
+        />
+      )}
+
+      {/* 💳 CHECKOUT */}
       {page === "checkout" && (
-        <Checkout
-          cart={cart}
-          totalPrice={totalPrice}
-          goBack={goBackToCart}
-        />
+        <Checkout cart={cart} goBack={() => setPage("cart")} />
       )}
 
-      {page === "auth" && <Auth goToShop={goBackFromAuth} />}
+      {/* 🔐 AUTH */}
+      {page === "auth" && <Auth goToShop={goToShop} />}
 
-      {/* bouton scroll */}
-      {showScrollTop && (
-        <button className="scrollTopButton" onClick={scrollToTop}>
-          ↑
-        </button>
-      )}
+      {/* 🔥 ADMIN */}
+      {page === "admin" && <Admin goBack={goToShop} />}
     </div>
   );
 }
