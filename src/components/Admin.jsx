@@ -5,31 +5,29 @@ import AdminProducts from "./AdminProducts";
 
 export default function Admin({ goBack }) {
   const [session, setSession] = useState(null);
+  const [loadingSession, setLoadingSession] = useState(true);
   const [orders, setOrders] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-
-      if (data.session) {
-        fetchOrders();
-      }
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-
-      if (session) {
-        fetchOrders();
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    checkSession();
   }, []);
+
+  async function checkSession() {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Erreur session :", error);
+    }
+
+    setSession(data.session);
+    setLoadingSession(false);
+
+    if (data.session) {
+      fetchOrders();
+    }
+  }
 
   async function fetchOrders() {
     const { data, error } = await supabase
@@ -38,29 +36,34 @@ export default function Admin({ goBack }) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Erreur récupération commandes :", error);
+      console.error("Erreur commandes :", error);
       return;
     }
 
-    setOrders(data);
+    setOrders(data || []);
   }
 
   async function handleLogin(e) {
     e.preventDefault();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      alert("Erreur de connexion");
+      alert("Erreur de connexion : vérifie ton email et ton mot de passe.");
       console.error(error);
+      return;
     }
+
+    setSession(data.session);
+    fetchOrders();
   }
 
   async function handleLogout() {
     await supabase.auth.signOut();
+    setSession(null);
     setOrders([]);
   }
 
@@ -71,16 +74,20 @@ export default function Admin({ goBack }) {
       .eq("id", orderId);
 
     if (error) {
-      alert("Erreur lors du changement de statut");
+      alert("Erreur changement statut");
       console.error(error);
       return;
     }
 
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
+    setOrders((prev) =>
+      prev.map((order) =>
         order.id === orderId ? { ...order, status: newStatus } : order
       )
     );
+  }
+
+  if (loadingSession) {
+    return <p>Chargement admin...</p>;
   }
 
   if (!session) {
@@ -115,33 +122,26 @@ export default function Admin({ goBack }) {
     );
   }
 
- return (
-  <div className={styles.admin}>
-    <div className={styles.header}>
-      <div>
-        <h2>Administration</h2>
-        <p>Commandes et produits</p>
+  return (
+    <div className={styles.admin}>
+      <div className={styles.header}>
+        <div>
+          <h2>Administration</h2>
+          <p>Connecté : {session.user.email}</p>
+        </div>
+
+        <div>
+          <button type="button" onClick={goBack}>
+            Boutique
+          </button>
+
+          <button type="button" onClick={handleLogout}>
+            Déconnexion
+          </button>
+        </div>
       </div>
 
-      <div>
-        <button type="button" onClick={goBack}>
-          Boutique
-        </button>
-
-        <button type="button" onClick={handleLogout}>
-          Déconnexion
-        </button>
-      </div>
-    </div>
-
-    <div className={styles.adminInfo}>
-      <p>
-        Connecté en admin :
-        <strong> {session.user.email}</strong>
-      </p>
-    </div>
-
-    <section>
+      <section>
         <h3>Commandes reçues</h3>
 
         {orders.length === 0 ? (
@@ -150,44 +150,29 @@ export default function Admin({ goBack }) {
           <div className={styles.orders}>
             {orders.map((order) => (
               <div key={order.id} className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <h3>Commande #{order.id}</h3>
-                  <span>
-                    {new Date(order.created_at).toLocaleString("fr-FR")}
-                  </span>
-                </div>
+                <h3>Commande #{order.id}</h3>
 
-                <div className={styles.customer}>
-                  <p>
-                    <strong>Client :</strong> {order.first_name}{" "}
-                    {order.last_name}
+                <p>
+                  <strong>Client :</strong> {order.first_name}{" "}
+                  {order.last_name}
+                </p>
+
+                <p>
+                  <strong>Téléphone :</strong> {order.phone}
+                </p>
+
+                <p>
+                  <strong>Adresse :</strong> {order.address},{" "}
+                  {order.postal_code} {order.city}
+                </p>
+
+                <h4>Articles</h4>
+
+                {order.cart?.map((item) => (
+                  <p key={`${order.id}-${item.id}`}>
+                    {item.name} x{item.quantity} — {item.price} €
                   </p>
-
-                  <p>
-                    <strong>Téléphone :</strong> {order.phone}
-                  </p>
-
-                  <p>
-                    <strong>Adresse :</strong> {order.address},{" "}
-                    {order.postal_code} {order.city}
-                  </p>
-                </div>
-
-                <div className={styles.products}>
-                  <h4>Articles</h4>
-
-                  {order.cart?.map((item) => (
-                    <div
-                      key={`${order.id}-${item.id}`}
-                      className={styles.item}
-                    >
-                      <span>{item.name}</span>
-                      <span>
-                        {item.quantity} × {item.price} €
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                ))}
 
                 <div className={styles.statusBox}>
                   <label>Statut :</label>
@@ -205,18 +190,14 @@ export default function Admin({ goBack }) {
                   </select>
                 </div>
 
-                <div className={styles.total}>
-                  <span>Total</span>
-                  <strong>{order.total_price} €</strong>
-                </div>
+                <strong>Total : {order.total_price} €</strong>
               </div>
             ))}
           </div>
         )}
       </section>
-<h3>Test formulaire produit</h3>
-<AdminProducts />
-      
+
+      <AdminProducts />
     </div>
   );
 }

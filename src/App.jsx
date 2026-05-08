@@ -1,181 +1,228 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+// Admin.jsx
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
+import styles from "./Admin.module.css"; // Créez ce fichier CSS Module
 
-import Header from "./components/Header";
-import ProductCard from "./components/ProductCard";
-
-import Cart from "./components/Cart";
-import Favorites from "./components/Favorites";
-import Checkout from "./components/Checkout";
-import Auth from "./components/Auth";
-import Admin from "./components/Admin";
-
-import { supabase } from "./lib/supabaseClient";
-import ProductDetail from "./components/ProductDetail";
-
-export default function App() {
-  const [page, setPage] = useState("shop");
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const [cart, setCart] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-
-  const [search, setSearch] = useState("");
-
-  // 🔥 PRODUITS SUPABASE
+export default function Admin({ goBack }) {
+  const [activeTab, setActiveTab] = useState("list"); // "list" ou "add"
   const [products, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loading, setLoading] = useState(false);
+  
+  // État du formulaire
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    description: "",
+    category: "",
+    image_url: ""
+  });
 
-  // 🔥 ROUTE /admin
+  // Charger les produits au montage
   useEffect(() => {
-    if (window.location.pathname === "/admin") {
-      setPage("admin");
+    if (activeTab === "list") {
+      fetchProducts();
     }
-  }, []);
-
-  // 🔥 FETCH PRODUITS
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  }, [activeTab]);
 
   async function fetchProducts() {
+    setLoading(true);
     const { data, error } = await supabase
       .from("products")
       .select("*")
-      .eq("is_sold", false);
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Erreur produits :", error);
+      console.error("Erreur:", error);
     } else {
-      setProducts(data);
+      setProducts(data || []);
     }
-
-    setLoadingProducts(false);
+    setLoading(false);
   }
 
-  function openProduct(product) {
-    setSelectedProduct(product);
-    setPage("product");
-  }
-
-  function addToCart(product) {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  }
-
-  function removeFromCart(productId) {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
-  }
-
-  function toggleFavorite(product) {
-    setFavorites((prev) => {
-      const exists = prev.find((p) => p.id === product.id);
-
-      if (exists) {
-        return prev.filter((p) => p.id !== product.id);
-      }
-
-      return [...prev, product];
-    });
-  }
-
-  function goToShop() {
-    setPage("shop");
-    setSelectedProduct(null);
-  }
-
-  function handleSearchSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    
+    const { error } = await supabase.from("products").insert([
+      {
+        name: formData.name,
+        price: parseFloat(formData.price),
+        description: formData.description,
+        category: formData.category,
+        image_url: formData.image_url,
+        is_sold: false
+      }
+    ]);
+
+    if (error) {
+      console.error("Erreur d'ajout:", error);
+      alert("Erreur lors de l'ajout du produit");
+    } else {
+      alert("Produit ajouté avec succès !");
+      setFormData({
+        name: "",
+        price: "",
+        description: "",
+        category: "",
+        image_url: ""
+      });
+      setActiveTab("list");
+      fetchProducts();
+    }
   }
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+  async function deleteProduct(productId) {
+    if (!confirm("Supprimer ce produit ?")) return;
+    
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId);
+
+    if (error) {
+      console.error("Erreur:", error);
+    } else {
+      fetchProducts();
+    }
+  }
+
+  function handleInputChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  }
 
   return (
-    <div className="container">
-      <Header
-        page={page}
-        setPage={setPage}
-        totalItems={cart.length}
-        totalFavorites={favorites.length}
-        search={search}
-        setSearch={setSearch}
-        handleSearchSubmit={handleSearchSubmit}
-      />
+    <div className={styles.adminContainer}>
+      <div className={styles.header}>
+        <button onClick={goBack} className={styles.backButton}>
+          ← Retour à la boutique
+        </button>
+        <h1>Administration</h1>
+      </div>
 
-      {/* 🛍️ BOUTIQUE */}
-      {page === "shop" && (
-        <>
-          <h2>Ma boutique</h2>
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${activeTab === "list" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("list")}
+        >
+          📦 Liste des produits
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === "add" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("add")}
+        >
+          ➕ Ajouter un produit
+        </button>
+      </div>
 
-          <div className="products">
-            {loadingProducts ? (
-              <p>Chargement...</p>
-            ) : (
-              filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  addToCart={addToCart}
-                  openProduct={openProduct}
-                  toggleFavorite={toggleFavorite}
-                  favorites={favorites}
-                />
-              ))
-            )}
+      {activeTab === "add" && (
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <h2>Ajouter un nouveau produit</h2>
+          
+          <div className={styles.formGroup}>
+            <label>Nom du produit *</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+              placeholder="Ex: T-shirt vintage"
+            />
           </div>
-        </>
+
+          <div className={styles.formGroup}>
+            <label>Prix (€) *</label>
+            <input
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleInputChange}
+              required
+              step="0.01"
+              placeholder="0.00"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows="4"
+              placeholder="Description du produit..."
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Catégorie</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              placeholder="Ex: Vêtements, Accessoires, etc."
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>URL de l'image</label>
+            <input
+              type="url"
+              name="image_url"
+              value={formData.image_url}
+              onChange={handleInputChange}
+              placeholder="https://exemple.com/image.jpg"
+            />
+          </div>
+
+          <button type="submit" className={styles.submitButton}>
+            Ajouter le produit
+          </button>
+        </form>
       )}
 
-      {/* 📄 PRODUIT */}
-      {page === "product" && selectedProduct && (
-        <ProductDetail
-          product={selectedProduct}
-          addToCart={addToCart}
-          goBack={goToShop}
-        />
+      {activeTab === "list" && (
+        <div className={styles.list}>
+          <h2>Gestion des produits</h2>
+          
+          {loading ? (
+            <p>Chargement...</p>
+          ) : products.length === 0 ? (
+            <p>Aucun produit trouvé</p>
+          ) : (
+            <div className={styles.productGrid}>
+              {products.map((product) => (
+                <div key={product.id} className={styles.productCard}>
+                  {product.image_url && (
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name}
+                      className={styles.productImage}
+                    />
+                  )}
+                  <div className={styles.productInfo}>
+                    <h3>{product.name}</h3>
+                    <p className={styles.price}>{product.price}€</p>
+                    <p className={styles.category}>{product.category}</p>
+                    <p className={styles.description}>
+                      {product.description?.substring(0, 100)}...
+                    </p>
+                    <button
+                      onClick={() => deleteProduct(product.id)}
+                      className={styles.deleteButton}
+                    >
+                      🗑️ Supprimer
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
-
-      {/* 🛒 PANIER */}
-      {page === "cart" && (
-        <Cart
-          cart={cart}
-          removeFromCart={removeFromCart}
-          goToCheckout={() => setPage("checkout")}
-        />
-      )}
-
-      {/* ❤️ FAVORIS */}
-      {page === "favorites" && (
-        <Favorites
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          openProduct={openProduct}
-        />
-      )}
-
-      {/* 💳 CHECKOUT */}
-      {page === "checkout" && (
-        <Checkout cart={cart} goBack={() => setPage("cart")} />
-      )}
-
-      {/* 🔐 AUTH */}
-      {page === "auth" && <Auth goToShop={goToShop} />}
-
-      {/* 🔥 ADMIN */}
-      {page === "admin" && <Admin goBack={goToShop} />}
     </div>
   );
 }

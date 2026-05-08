@@ -11,6 +11,8 @@ export default function Header({
   search,
   setSearch,
   handleSearchSubmit,
+  categories,
+
 }) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showMegaMenu, setShowMegaMenu] = useState(false);
@@ -111,7 +113,7 @@ export default function Header({
 
             {showMegaMenu && (
               <div className={styles.mobileMega}>
-                <MegaMenu setPage={goTo} openCategory={handleCategory} />
+                <MegaMenu setPage={goTo} openCategory={handleCategory}categories={categories} />
               </div>
             )}
 
@@ -190,7 +192,7 @@ export default function Header({
               ✕
             </button>
 
-            <MegaMenu setPage={goTo} openCategory={handleCategory} />
+            <MegaMenu setPage={goTo} openCategory={handleCategory} categories={categories} />
           </div>
         )}
       </div>

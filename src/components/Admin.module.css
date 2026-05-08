@@ -146,4 +146,85 @@
   .item {
     flex-direction: column;
   }
+
+  .imageBox {
+  position: relative;
+  width: 70px;
+  height: 90px;
+  flex-shrink: 0;
+}
+
+.imageBox img {
+  width: 70px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #eee;
+}
+
+.soldBadge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: #111;
+  color: white;
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 999px;
+}
+
+.soldCard {
+  opacity: 0.65;
+}
+
+.productInfo {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.soldButton,
+.availableButton,
+.deleteButton {
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.soldButton {
+  background: #111;
+  color: white;
+}
+
+.availableButton {
+  background: #0f8f8f;
+  color: white;
+}
+
+.deleteButton {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  border: none;
+  background: #111;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
 }

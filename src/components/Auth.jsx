@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 import styles from "./Auth.module.css";
 
-export default function Auth({ goToShop }) {
+export default function Auth({ goToShop, goToAdmin }) {
   const [mode, setMode] = useState("login");
   const [formData, setFormData] = useState({
     name: "",
@@ -18,17 +19,40 @@ export default function Auth({ goToShop }) {
     }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    if (mode === "login") {
-      alert("Connexion réussie !");
-    } else {
-      alert("Inscription réussie !");
+    if (mode === "register") {
+      alert("Inscription client non activée pour le moment.");
+      return;
     }
 
-    console.log(formData);
-    goToShop();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) {
+      alert("Email ou mot de passe incorrect.");
+      console.error(error);
+      return;
+    }
+
+    const userId = data.user.id;
+
+    const { data: adminData } = await supabase
+      .from("admin_users")
+      .select("id")
+      .eq("id", userId)
+      .single();
+
+    if (adminData) {
+      alert("Connexion admin réussie !");
+      goToAdmin();
+    } else {
+      alert("Connexion réussie !");
+      goToShop();
+    }
   }
 
   return (
