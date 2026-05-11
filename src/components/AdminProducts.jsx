@@ -7,7 +7,20 @@ export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState("add");
 
+  const [editingId, setEditingId] = useState(null);
+
   const [form, setForm] = useState({
+    name: "",
+    brand: "",
+    color: "",
+    price: "",
+    size: "",
+    category: "",
+    condition: "Très bon état",
+    description: "",
+  });
+
+  const [editForm, setEditForm] = useState({
     name: "",
     brand: "",
     color: "",
@@ -39,6 +52,11 @@ export default function AdminProducts() {
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleEditChange(e) {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit(e) {
@@ -114,8 +132,61 @@ export default function AdminProducts() {
     });
 
     setImageFile(null);
+    setActiveTab("list");
 
     alert("Produit ajouté !");
+  }
+
+  function startEdit(product) {
+    setEditingId(product.id);
+
+    setEditForm({
+      name: product.name || "",
+      brand: product.brand || "",
+      color: product.color || "",
+      price: product.price || "",
+      size: product.size || "",
+      category: product.category || "",
+      condition: product.condition || "Très bon état",
+      description: product.description || "",
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+  }
+
+  async function saveEdit(productId) {
+    const updatedProduct = {
+      name: editForm.name,
+      brand: editForm.brand,
+      color: editForm.color,
+      price: Number(editForm.price),
+      size: editForm.size,
+      category: editForm.category,
+      condition: editForm.condition,
+      description: editForm.description,
+    };
+
+    const { error } = await supabase
+      .from("products")
+      .update(updatedProduct)
+      .eq("id", productId);
+
+    if (error) {
+      console.error("Erreur modification produit :", error);
+      alert("Erreur lors de la modification.");
+      return;
+    }
+
+    setProducts((prev) =>
+      prev.map((product) =>
+        product.id === productId ? { ...product, ...updatedProduct } : product
+      )
+    );
+
+    setEditingId(null);
+    alert("Produit modifié !");
   }
 
   async function markAsSold(productId) {
@@ -188,141 +259,243 @@ export default function AdminProducts() {
       <h2>Gestion des produits</h2>
 
       <div className={styles.tabs}>
-  <button onClick={() => setActiveTab("add")}>Ajouter un produit</button>
-  <button onClick={() => setActiveTab("list")}>Voir les produits</button>
-</div>
+        <button type="button" onClick={() => setActiveTab("add")}>
+          Ajouter un produit
+        </button>
 
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Nom du produit"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          name="brand"
-          placeholder="Marque"
-          value={form.brand}
-          onChange={handleChange}
-        />
-
-        <input
-          name="color"
-          placeholder="Couleur"
-          value={form.color}
-          onChange={handleChange}
-        />
-
-        <input
-          name="price"
-          type="number"
-          placeholder="Prix"
-          value={form.price}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files[0])}
-          required
-        />
-
-        <input
-          name="size"
-          placeholder="Taille"
-          value={form.size}
-          onChange={handleChange}
-        />
-
-        <input
-          name="category"
-          placeholder="Catégorie ex : Robe, Chaussures, Bijoux..."
-          value={form.category}
-          onChange={handleChange}
-          required
-        />
-
-        <select
-          name="condition"
-          value={form.condition}
-          onChange={handleChange}
-        >
-          <option value="Neuf">Neuf</option>
-          <option value="Comme neuf">Comme neuf</option>
-          <option value="Très bon état">Très bon état</option>
-          <option value="Bon état">Bon état</option>
-        </select>
-
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={form.description}
-          onChange={handleChange}
-        />
-
-        <button type="submit">Ajouter le produit</button>
-      </form>
-
-      <div className={styles.list}>
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className={`${styles.card} ${
-              product.is_sold ? styles.soldCard : ""
-            }`}
-          >
-            <div className={styles.imageBox}>
-              <img src={product.image} alt={product.name} />
-
-              {product.is_sold && (
-                <span className={styles.soldBadge}>Vendu</span>
-              )}
-            </div>
-
-            <div className={styles.productInfo}>
-              <h3>{product.name}</h3>
-
-              <p>
-                {product.category} · {product.size}
-              </p>
-
-              <strong>{product.price} €</strong>
-
-              <div className={styles.actions}>
-                {product.is_sold ? (
-                  <button
-                    type="button"
-                    className={styles.availableButton}
-                    onClick={() => markAsAvailable(product.id)}
-                  >
-                    Remettre en vente
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className={styles.soldButton}
-                    onClick={() => markAsSold(product.id)}
-                  >
-                    Marquer vendu
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  className={styles.deleteButton}
-                  onClick={() => deleteProduct(product.id)}
-                >
-                  Supprimer
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+        <button type="button" onClick={() => setActiveTab("list")}>
+          Voir les produits
+        </button>
       </div>
+
+      {activeTab === "add" && (
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <input
+            name="name"
+            placeholder="Nom du produit"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            name="brand"
+            placeholder="Marque"
+            value={form.brand}
+            onChange={handleChange}
+          />
+
+          <input
+            name="color"
+            placeholder="Couleur"
+            value={form.color}
+            onChange={handleChange}
+          />
+
+          <input
+            name="price"
+            type="number"
+            placeholder="Prix"
+            value={form.price}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            required
+          />
+
+          <input
+            name="size"
+            placeholder="Taille"
+            value={form.size}
+            onChange={handleChange}
+          />
+
+          <input
+            name="category"
+            placeholder="Catégorie ex : Robe, Chaussures, Bijoux..."
+            value={form.category}
+            onChange={handleChange}
+            required
+          />
+
+          <select
+            name="condition"
+            value={form.condition}
+            onChange={handleChange}
+          >
+            <option value="Neuf">Neuf</option>
+            <option value="Comme neuf">Comme neuf</option>
+            <option value="Très bon état">Très bon état</option>
+            <option value="Bon état">Bon état</option>
+          </select>
+
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={form.description}
+            onChange={handleChange}
+          />
+
+          <button type="submit">Ajouter le produit</button>
+        </form>
+      )}
+
+      {activeTab === "list" && (
+        <div className={styles.list}>
+          {products.length === 0 ? (
+            <p>Aucun produit pour le moment.</p>
+          ) : (
+            products.map((product) => (
+              <div
+                key={product.id}
+                className={`${styles.card} ${
+                  product.is_sold ? styles.soldCard : ""
+                }`}
+              >
+                <div className={styles.imageBox}>
+                  <img src={product.image} alt={product.name} />
+
+                  {product.is_sold && (
+                    <span className={styles.soldBadge}>Vendu</span>
+                  )}
+                </div>
+
+                <div className={styles.productInfo}>
+                  {editingId === product.id ? (
+                    <div className={styles.editBox}>
+                      <input
+                        name="name"
+                        value={editForm.name}
+                        onChange={handleEditChange}
+                        placeholder="Nom"
+                      />
+
+                      <input
+                        name="brand"
+                        value={editForm.brand}
+                        onChange={handleEditChange}
+                        placeholder="Marque"
+                      />
+
+                      <input
+                        name="color"
+                        value={editForm.color}
+                        onChange={handleEditChange}
+                        placeholder="Couleur"
+                      />
+
+                      <input
+                        name="price"
+                        type="number"
+                        value={editForm.price}
+                        onChange={handleEditChange}
+                        placeholder="Prix"
+                      />
+
+                      <input
+                        name="size"
+                        value={editForm.size}
+                        onChange={handleEditChange}
+                        placeholder="Taille"
+                      />
+
+                      <input
+                        name="category"
+                        value={editForm.category}
+                        onChange={handleEditChange}
+                        placeholder="Catégorie"
+                      />
+
+                      <select
+                        name="condition"
+                        value={editForm.condition}
+                        onChange={handleEditChange}
+                      >
+                        <option value="Neuf">Neuf</option>
+                        <option value="Comme neuf">Comme neuf</option>
+                        <option value="Très bon état">Très bon état</option>
+                        <option value="Bon état">Bon état</option>
+                      </select>
+
+                      <textarea
+                        name="description"
+                        value={editForm.description}
+                        onChange={handleEditChange}
+                        placeholder="Description"
+                      />
+
+                      <div className={styles.editActions}>
+                        <button
+                          type="button"
+                          onClick={() => saveEdit(product.id)}
+                        >
+                          Enregistrer
+                        </button>
+
+                        <button type="button" onClick={cancelEdit}>
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h3>{product.name}</h3>
+
+                      <p>
+                        {product.category} · {product.size}
+                      </p>
+
+                      <p>{product.condition}</p>
+
+                      <strong>{product.price} €</strong>
+
+                      <div className={styles.actions}>
+                        <button
+                          type="button"
+                          onClick={() => startEdit(product)}
+                        >
+                          Modifier
+                        </button>
+
+                        {product.is_sold ? (
+                          <button
+                            type="button"
+                            className={styles.availableButton}
+                            onClick={() => markAsAvailable(product.id)}
+                          >
+                            Remettre en vente
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.soldButton}
+                            onClick={() => markAsSold(product.id)}
+                          >
+                            Marquer vendu
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          className={styles.deleteButton}
+                          onClick={() => deleteProduct(product.id)}
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }

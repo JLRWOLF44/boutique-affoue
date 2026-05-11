@@ -227,4 +227,133 @@
   border-radius: 10px;
   cursor: pointer;
 }
+.adminTabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.adminTabs button {
+  border: none;
+  background: #e5e7eb;
+  color: #111;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.adminTabs .activeTab,
+.activeTab {
+  background: #111;
+  color: white;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filters button {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: white;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.Enattente {
+  background: #eab308;
+}
+
+.Confirmée {
+  background: #3b82f6;
+}
+
+.Préparée {
+  background: #8b5cf6;
+}
+
+.Envoyée {
+  background: #10b981;
+}
+
+.Terminée {
+  background: #111827;
+}
+
+.Annulée {
+  background: #ef4444;
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.statCard {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.statCard h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #666;
+}
+
+.statCard p {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.statCard {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.statCard h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: #666;
+}
+
+.statCard p {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.resetStatsButton {
+  border: none;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
 }
